@@ -13,6 +13,7 @@ declare(strict_types=1);
  
 namespace Tobento\Service\ReadWrite\Modifier;
 
+use Tobento\Service\ReadWrite\Exception\ModifyErrorsException;
 use Tobento\Service\ReadWrite\Exception\ModifyException;
 use Tobento\Service\ReadWrite\ModifierInterface;
 use Tobento\Service\ReadWrite\ReaderInterface;
@@ -59,32 +60,19 @@ final class Validation implements ModifierInterface
         if ($validation->isValid()) {
             return $row;
         }
-        
-        // Validation failed: collect messages grouped by field
-        $errors = [];
-        
-        foreach($validation->errors() as $error) {
-            $errors[$error->key()][] = $error->message();
-        }
-
-        $messages = implode('; ', array_map(
-            static fn(string $field, array $messages): string =>
-                $field . ': ' . implode(', ', $messages),
-            array_keys($errors),
-            $errors
-        ));
 
         if ($this->onFail === 'skip') {
             return new SkipRow(
                 key: $row->key(),
                 attributes: $row->all(),
-                reason: sprintf('Validation failed: %s', $messages),
+                reason: sprintf('Validation failed: %s', (string)$validation->errors()),
             );
         }
         
-        throw new ModifyException(
+        throw new ModifyErrorsException(
             row: $row,
-            message: sprintf('Validation failed: %s', $messages),
+            errors: $validation->errors(),
+            message: sprintf('Validation failed: %s', (string)$validation->errors()),
         );
     }
 }
