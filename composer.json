@@ -1,6 +1,6 @@
 {
     "name": "tobento/service-read-write",
-    "version": "2.0",
+    "version": "2.0.1",
     "type": "library",
     "description": "Flexible data readers, writers, modifiers and processors for PHP applications.",
     "keywords": [
@@ -35,6 +35,7 @@
         "psr/http-message": "^2.0",
         "tobento/service-collection": "^2.0",
         "tobento/service-iterable": "^2.0",
+        "tobento/service-message": "^2.0",
         "tobento/service-support": "^2.0"
     },
     "suggest": {
