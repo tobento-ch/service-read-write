@@ -30,6 +30,22 @@ class JsonStreamTest extends TestCase
         return Utils::streamFor($resource);
     }
 
+    public function testGetterMethods(): void
+    {
+        $json = <<<JSON
+[
+    {"id": 1, "name": "Alice"},
+    {"id": 2, "name": "Bob"}
+]
+JSON;
+
+        $stream = $this->createStream($json);
+        $reader = new JsonStream($stream);
+        
+        $this->assertTrue(is_resource($reader->resource()));
+        $this->assertSame(3, $reader->previewRows());
+    }
+    
     public function testColumns(): void
     {
         $json = <<<JSON

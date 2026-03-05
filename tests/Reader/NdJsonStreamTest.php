@@ -29,6 +29,20 @@ class NdJsonStreamTest extends TestCase
 
         return Utils::streamFor($resource);
     }
+    
+    public function testGetterMethods(): void
+    {
+        $ndjson = <<<TXT
+{"id":1,"name":"Alice"}
+{"id":2,"name":"Bob"}
+TXT;
+
+        $stream = $this->createStream($ndjson);
+        $reader = new NdJsonStream($stream);
+        
+        $this->assertSame($stream, $reader->stream());
+        $this->assertSame(3, $reader->previewRows());
+    }
 
     public function testColumns(): void
     {

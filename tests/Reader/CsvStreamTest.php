@@ -21,12 +21,26 @@ use GuzzleHttp\Psr7\Utils;
 
 class CsvStreamTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $csv = "id,name\n1,Alice\n2,Bob\n";
+        $stream = Utils::streamFor($csv);
+
+        $reader = new CsvStream(stream: $stream, previewRows: 3);
+        
+        $this->assertSame($stream, $reader->stream());
+        $this->assertSame(',', $reader->delimiter());
+        $this->assertSame('"', $reader->enclosure());
+        $this->assertSame('\\', $reader->escape());
+        $this->assertSame(3, $reader->previewRows());
+    }
+    
     public function testReadsHeaders(): void
     {
         $csv = "id,name\n1,Alice\n2,Bob\n";
         $stream = Utils::streamFor($csv);
 
-        $reader = new CsvStream($stream, previewRows: 3);
+        $reader = new CsvStream(stream: $stream, previewRows: 3);
 
         // Headers
         $this->assertSame(['id', 'name'], $reader->columns());

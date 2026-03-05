@@ -21,6 +21,19 @@ use Tobento\Service\ReadWrite\RowInterface;
 
 class IterableReaderTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $data = [
+            ['id' => 1, 'name' => 'Alice'],
+            ['id' => 2, 'name' => 'Bob'],
+        ];
+
+        $reader = new IterableReader($data);
+        
+        $this->assertSame($data, $reader->iterable());
+        $this->assertSame(3, $reader->previewRows());
+    }
+    
     public function testColumns(): void
     {
         $data = [
