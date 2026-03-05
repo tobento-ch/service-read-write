@@ -22,6 +22,18 @@ use Tobento\Service\ReadWrite\Writer\Resource\InMemory;
 
 class CsvResourceTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $resource = new InMemory();
+        $writer = new CsvResource($resource);
+        
+        $this->assertSame($resource, $writer->resource());
+        $this->assertSame(',', $writer->delimiter());
+        $this->assertSame('"', $writer->enclosure());
+        $this->assertSame('\\', $writer->escape());
+        $this->assertTrue($writer->writeBom());
+    }
+    
     public function testStartWritesBomInOverwriteMode(): void
     {
         $resource = new InMemory();

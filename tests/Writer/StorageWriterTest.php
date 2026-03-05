@@ -30,6 +30,22 @@ class StorageWriterTest extends TestCase
         )->table('users');
     }
     
+    public function testGetterMethods(): void
+    {
+        $storage = $this->createStorage();
+        
+        $customWriter = function(RowInterface $row, StorageInterface $s) {};
+        
+        $writer = new StorageWriter(
+            storage: $storage,
+            writer: $customWriter,
+        );
+        
+        $this->assertSame($storage, $writer->storage());
+        $this->assertSame($customWriter, $writer->writer());
+        $this->assertSame('id', $writer->idName());
+    }
+    
     public function testColumnsDefaultsToEmptyArray(): void
     {
         $storage = $this->createStorage();

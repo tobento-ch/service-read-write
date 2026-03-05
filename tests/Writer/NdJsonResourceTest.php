@@ -22,6 +22,14 @@ use Tobento\Service\ReadWrite\Row\Row;
 
 class NdJsonResourceTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $resource = new InMemory();
+        $writer = new NdJsonResource($resource);
+        
+        $this->assertSame($resource, $writer->resource());
+    }
+    
     public function testStartOpensResource(): void
     {
         $resource = new InMemory();

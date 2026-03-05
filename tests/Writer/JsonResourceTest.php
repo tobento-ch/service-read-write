@@ -22,6 +22,14 @@ use Tobento\Service\ReadWrite\Writer\Resource\InMemory;
 
 class JsonResourceTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $resource = new InMemory();
+        $writer = new JsonResource($resource);
+        
+        $this->assertSame($resource, $writer->resource());
+    }
+    
     public function testStartWritesOpeningBracketInOverwriteMode(): void
     {
         $resource = new InMemory();

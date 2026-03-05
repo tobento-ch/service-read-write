@@ -24,6 +24,26 @@ use Tobento\Service\ReadWrite\Writer\Resource\InMemory;
 
 class PdfResourceTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $resource = new InMemory();
+        $pdfGen = $this->createStub(PdfGeneratorInterface::class);
+
+        $writer = new PdfResource(
+            resource: $resource,
+            pdfGenerator: $pdfGen,
+            templateName: 'pdf/test',
+            templateData: ['foo' => 'bar'],
+            pdf: null,
+        );
+        
+        $this->assertSame($resource, $writer->resource());
+        $this->assertSame($pdfGen, $writer->pdfGenerator());
+        $this->assertSame('pdf/test', $writer->templateName());
+        $this->assertSame(['foo' => 'bar'], $writer->templateData());
+        $this->assertSame(null, $writer->pdf());
+    }
+    
     public function testStartOpensResource(): void
     {
         $resource = new InMemory();

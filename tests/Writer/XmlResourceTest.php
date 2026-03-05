@@ -23,6 +23,26 @@ use InvalidArgumentException;
 
 class XmlResourceTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $resource = new InMemory();
+        $writer = new XmlResource(
+            resource: $resource,
+            rootElement: 'products',
+            rowElement: 'product',
+            rowWrapper: 'channel',
+            rootAttributes: ['foo' => 'foo'],
+        );
+        
+        $this->assertSame($resource, $writer->resource());
+        $this->assertSame('products', $writer->rootElement());
+        $this->assertSame('product', $writer->rowElement());
+        $this->assertSame('channel', $writer->rowWrapper());
+        $this->assertSame(['foo' => 'foo'], $writer->rootAttributes());
+        $this->assertSame('1.0', $writer->xmlVersion());
+        $this->assertSame('UTF-8', $writer->encoding());
+    }
+    
     public function testStartWritesXmlDeclarationAndRootInOverwriteMode(): void
     {
         $resource = new InMemory();

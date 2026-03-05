@@ -22,6 +22,21 @@ use Tobento\Service\Repository\RepositoryWriteException;
 
 class RepositoryWriterTest extends TestCase
 {
+    public function testGetterMethods(): void
+    {
+        $repository = $this->createStub(WriteRepositoryInterface::class);
+        $customWriter = function(RowInterface $row, WriteRepositoryInterface $repo) {};
+        
+        $writer = new RepositoryWriter(
+            repository: $repository,
+            writer: $customWriter,
+        );
+        
+        $this->assertSame($repository, $writer->repository());
+        $this->assertSame($customWriter, $writer->writer());
+        $this->assertSame('id', $writer->idName());
+    }
+    
     public function testCreatesRowWhenNoIdPresent(): void
     {
         $repository = $this->createMock(WriteRepositoryInterface::class);
