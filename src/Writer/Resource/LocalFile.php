@@ -33,6 +33,26 @@ final class LocalFile implements ResourceInterface
         private string $filename,
         private string $mode = 'w',
     ) {}
+    
+    /**
+     * Returns the filename.
+     *
+     * @return string
+     */
+    public function filename(): string
+    {
+        return $this->filename;
+    }
+    
+    /**
+     * Returns the mode.
+     *
+     * @return string
+     */
+    public function mode(): string
+    {
+        return $this->mode;
+    }
 
     /**
      * Open the resource for writing.

@@ -35,6 +35,26 @@ final class FileStorage implements ResourceInterface
         private StorageInterface $storage,
         private string $filename,
     ) {}
+    
+    /**
+     * Returns the storage.
+     *
+     * @return StorageInterface
+     */
+    public function storage(): StorageInterface
+    {
+        return $this->storage;
+    }
+    
+    /**
+     * Returns the filename.
+     *
+     * @return string
+     */
+    public function filename(): string
+    {
+        return $this->filename;
+    }
 
     /**
      * Open the resource for writing.
