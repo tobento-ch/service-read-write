@@ -19,6 +19,7 @@ use Tobento\Service\ReadWrite\Reader\IterableReader;
 use Tobento\Service\ReadWrite\Writer\NullWriter;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Row\SkipRow;
+use Tobento\Service\ReadWrite\Exception\ModifyErrorsException;
 use Tobento\Service\ReadWrite\Exception\ModifyException;
 use Tobento\Service\Validation\Validator;
 
@@ -63,8 +64,8 @@ class ValidationTest extends TestCase
 
         $row = new Row(1, ['name' => '']);
 
-        $this->expectException(ModifyException::class);
-        $this->expectExceptionMessage('Validation failed: name:');
+        $this->expectException(ModifyErrorsException::class);
+        $this->expectExceptionMessage('Validation failed: [error] The name is required. (name)');
 
         $modifier->modify($row, $this->reader(), $this->writer());
     }
@@ -84,8 +85,10 @@ class ValidationTest extends TestCase
         $modified = $modifier->modify($row, $this->reader(), $this->writer());
 
         $this->assertInstanceOf(SkipRow::class, $modified);
-        $this->assertStringContainsString('Validation failed:', $modified->reason());
-        $this->assertStringContainsString('email:', $modified->reason());
+        $this->assertStringContainsString(
+            'Validation failed: [error] The email must be a valid email address. (email)',
+            $modified->reason(),
+        );
     }
 
     public function testMultipleValidationErrorsAreGrouped(): void
