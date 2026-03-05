@@ -370,10 +370,10 @@ It supports writing headers, handling BOM, and controlling write modes (overwrit
 **Example**
 
 ```php
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\CsvResource;
 use Tobento\Service\ReadWrite\Writer\Mode;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 // Create a file resource
 $resource = new LocalFile('/data/output.csv');
@@ -425,10 +425,10 @@ It writes rows as objects inside a top-level JSON array, supporting overwrite, a
 **Example**
 
 ```php
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\JsonResource;
 use Tobento\Service\ReadWrite\Writer\Mode;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 // Create a file resource
 $resource = new LocalFile('/data/output.json');
@@ -474,10 +474,10 @@ It writes each row as a standalone JSON object on its own line, making it ideal 
 **Example**
 
 ```php
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\Mode;
 use Tobento\Service\ReadWrite\Writer\NdJsonResource;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 // Create a file resource
 $resource = new LocalFile('/data/output.ndjson');
@@ -582,9 +582,9 @@ composer require tobento/service-pdf
 use Tobento\Service\Pdf\Enums\Orientation;
 use Tobento\Service\Pdf\Pdf;
 use Tobento\Service\Pdf\PdfGenerator;
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\PdfResource;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 // Create a file resource
 $resource = new LocalFile('/data/report.pdf');
@@ -873,10 +873,10 @@ It supports configurable root elements, row elements, optional wrapper elements,
 **Example**
 
 ```php
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\XmlResource;
 use Tobento\Service\ReadWrite\Writer\Mode;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 // Create a file resource
 $resource = new LocalFile('/data/feed.xml');
@@ -922,10 +922,10 @@ $writer->finish();
 **Atom Feed Example**
 
 ```php
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\XmlResource;
 use Tobento\Service\ReadWrite\Writer\Mode;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 $resource = new LocalFile('/data/atom.xml');
 
@@ -959,10 +959,10 @@ $writer->finish();
 **Google Shopping Product Feed Example**
 
 ```php
-use Tobento\Service\ReadWrite\Resource\LocalFile;
 use Tobento\Service\ReadWrite\Row\Row;
 use Tobento\Service\ReadWrite\Writer\XmlResource;
 use Tobento\Service\ReadWrite\Writer\Mode;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
 
 $resource = new LocalFile('/data/google-shopping.xml');
 
@@ -2317,7 +2317,7 @@ composer require tobento/service-validation
 - Dot-aware paths supported (e.g. `user.email`, `items.0.price`).
 - Uses `ValidatorInterface` to apply rules such as `required`, `email`, `int`, `min`, etc.
 - On validation failure:
-  - `'fail'` throws `ModifyException`
+  - `'fail'` throws `ModifyErrorsException`
   - `'skip'` returns `SkipRow`
 - Groups error messages by field for readable output.
 - Works with any reader and writer combination.
@@ -2361,10 +2361,10 @@ $modified = $modifier->modify($row, $reader, $writer);
 //     'age'   => '17',
 //     'name'  => 'John Doe',
 //   ],
-//   reason: 'Validation failed: email: The email must be a valid email address; age: Must be at least 18'
+//   reason: 'Validation failed: [error] The email must be a valid email address (email) [error] Must be at least 18 (age)'
 // }
 
-// If onFail = 'fail', a ModifyException is thrown instead.
+// If onFail = 'fail', a ModifyErrorsException is thrown instead.
 ```
 
 ## Processors
