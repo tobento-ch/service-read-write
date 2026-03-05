@@ -45,6 +45,36 @@ final class RepositoryWriter implements WriterInterface
     }
     
     /**
+     * Returns the repository.
+     *
+     * @return WriteRepositoryInterface
+     */
+    public function repository(): WriteRepositoryInterface
+    {
+        return $this->repository;
+    }
+    
+    /**
+     * Returns the writer.
+     *
+     * @return null|callable
+     */
+    public function writer(): null|callable
+    {
+        return $this->writer;
+    }
+    
+    /**
+     * Returns the id name.
+     *
+     * @return string
+     */
+    public function idName(): string
+    {
+        return $this->idName;
+    }
+    
+    /**
      * Returns the writer type.
      *
      * @return Type

@@ -81,6 +81,76 @@ final class XmlResource implements WriterInterface, ModeAwareInterface
     }
     
     /**
+     * Returns the resource.
+     *
+     * @return ResourceInterface
+     */
+    public function resource(): ResourceInterface
+    {
+        return $this->resource;
+    }
+    
+    /**
+     * Returns the rootElement.
+     *
+     * @return string
+     */
+    public function rootElement(): string
+    {
+        return $this->rootElement;
+    }
+    
+    /**
+     * Returns the rowElement.
+     *
+     * @return string
+     */
+    public function rowElement(): string
+    {
+        return $this->rowElement;
+    }
+    
+    /**
+     * Returns the rowWrapper.
+     *
+     * @return null|string
+     */
+    public function rowWrapper(): null|string
+    {
+        return $this->rowWrapper;
+    }
+    
+    /**
+     * Returns the rootAttributes.
+     *
+     * @return array
+     */
+    public function rootAttributes(): array
+    {
+        return $this->rootAttributes;
+    }
+    
+    /**
+     * Returns the xmlVersion.
+     *
+     * @return string
+     */
+    public function xmlVersion(): string
+    {
+        return $this->xmlVersion;
+    }
+    
+    /**
+     * Returns the encoding.
+     *
+     * @return string
+     */
+    public function encoding(): string
+    {
+        return $this->encoding;
+    }
+    
+    /**
      * Sets the mode.
      *
      * @param Mode $mode

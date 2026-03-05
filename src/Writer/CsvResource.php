@@ -48,6 +48,56 @@ final class CsvResource implements WriterInterface, ModeAwareInterface
     ) {}
     
     /**
+     * Returns the resource.
+     *
+     * @return ResourceInterface
+     */
+    public function resource(): ResourceInterface
+    {
+        return $this->resource;
+    }
+    
+    /**
+     * Returns the delimiter.
+     *
+     * @return string
+     */
+    public function delimiter(): string
+    {
+        return $this->delimiter;
+    }
+    
+    /**
+     * Returns the enclosure.
+     *
+     * @return string
+     */
+    public function enclosure(): string
+    {
+        return $this->enclosure;
+    }
+    
+    /**
+     * Returns the escape.
+     *
+     * @return string
+     */
+    public function escape(): string
+    {
+        return $this->escape;
+    }
+    
+    /**
+     * Returns whetger to write Bom.
+     *
+     * @return bool
+     */
+    public function writeBom(): bool
+    {
+        return $this->writeBom;
+    }
+    
+    /**
      * Sets the mode.
      *
      * @param Mode $mode

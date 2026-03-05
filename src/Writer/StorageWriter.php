@@ -44,6 +44,36 @@ final class StorageWriter implements WriterInterface
     }
     
     /**
+     * Returns the storage.
+     *
+     * @return StorageInterface
+     */
+    public function storage(): StorageInterface
+    {
+        return $this->storage;
+    }
+    
+    /**
+     * Returns the writer.
+     *
+     * @return null|callable
+     */
+    public function writer(): null|callable
+    {
+        return $this->writer;
+    }
+    
+    /**
+     * Returns the id name.
+     *
+     * @return string
+     */
+    public function idName(): string
+    {
+        return $this->idName;
+    }
+    
+    /**
      * Returns the writer type.
      *
      * @return Type

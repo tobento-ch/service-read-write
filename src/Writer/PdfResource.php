@@ -52,6 +52,56 @@ final class PdfResource implements WriterInterface
         private array $templateData = [],
         private null|PdfInterface $pdf = null,
     ) {}
+    
+    /**
+     * Returns the resource.
+     *
+     * @return ResourceInterface
+     */
+    public function resource(): ResourceInterface
+    {
+        return $this->resource;
+    }
+    
+    /**
+     * Returns the PDF generator.
+     *
+     * @return PdfGeneratorInterface
+     */
+    public function pdfGenerator(): PdfGeneratorInterface
+    {
+        return $this->pdfGenerator;
+    }
+    
+    /**
+     * Returns the template name.
+     *
+     * @return string
+     */
+    public function templateName(): string
+    {
+        return $this->templateName;
+    }
+    
+    /**
+     * Returns the template data.
+     *
+     * @return array
+     */
+    public function templateData(): array
+    {
+        return $this->templateData;
+    }
+    
+    /**
+     * Returns the PDF.
+     *
+     * @return null|PdfInterface
+     */
+    public function pdf(): null|PdfInterface
+    {
+        return $this->pdf;
+    }
 
     /**
      * Returns the writer type.

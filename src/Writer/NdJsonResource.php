@@ -30,6 +30,16 @@ final class NdJsonResource implements WriterInterface
     ) {}
     
     /**
+     * Returns the resource.
+     *
+     * @return ResourceInterface
+     */
+    public function resource(): ResourceInterface
+    {
+        return $this->resource;
+    }
+    
+    /**
      * Returns the writer type.
      *
      * @return Type

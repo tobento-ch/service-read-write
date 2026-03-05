@@ -40,6 +40,16 @@ final class JsonResource implements WriterInterface, ModeAwareInterface
     ) {}
     
     /**
+     * Returns the resource.
+     *
+     * @return ResourceInterface
+     */
+    public function resource(): ResourceInterface
+    {
+        return $this->resource;
+    }
+    
+    /**
      * Sets the mode.
      *
      * @param Mode $mode
