@@ -26,6 +26,15 @@ class FileStorageTest extends TestCase
         return $this->createStub(StorageInterface::class);
     }
 
+    public function testGetterMethods(): void
+    {
+        $storage = $this->createStorageMock();
+        $writer = new FileStorage($storage, 'file.txt');
+        
+        $this->assertSame($storage, $writer->storage());
+        $this->assertSame('file.txt', $writer->filename());
+    }
+    
     public function testOpenCreatesHandle(): void
     {
         $storage = $this->createStorageMock();

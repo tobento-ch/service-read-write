@@ -23,6 +23,15 @@ class LocalFileTest extends TestCase
     {
         return tempnam(sys_get_temp_dir(), 'rw_');
     }
+    
+    public function testGetterMethods(): void
+    {
+        $file = $this->tempFile();
+        $writer = new LocalFile($file);
+        
+        $this->assertSame($file, $writer->filename());
+        $this->assertSame('w', $writer->mode());
+    }
 
     public function testOpenCreatesHandle(): void
     {
