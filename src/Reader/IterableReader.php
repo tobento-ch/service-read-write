@@ -45,6 +45,26 @@ class IterableReader implements ReaderInterface
     ) {}
     
     /**
+     * Returns the iterable.
+     *
+     * @return iterable
+     */
+    public function iterable(): iterable
+    {
+        return $this->iterable;
+    }
+    
+    /**
+     * Returns the preview rows.
+     *
+     * @return int
+     */
+    public function previewRows(): int
+    {
+        return $this->previewRows;
+    }
+    
+    /**
      * Returns the column names (schema definition).
      *
      * Example: ['title', 'status', 'created_at']

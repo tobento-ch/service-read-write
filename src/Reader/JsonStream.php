@@ -54,6 +54,26 @@ class JsonStream implements ReaderInterface
     }
     
     /**
+     * Returns the resource.
+     *
+     * @return resource|null
+     */
+    public function resource()
+    {
+        return $this->resource;
+    }
+    
+    /**
+     * Returns the preview rows.
+     *
+     * @return int
+     */
+    public function previewRows(): int
+    {
+        return $this->previewRows;
+    }
+    
+    /**
      * Returns the column names (schema definition).
      *
      * Example: ['title', 'status', 'created_at']

@@ -45,6 +45,56 @@ class CsvStream implements ReaderInterface
     ) {}
 
     /**
+     * Returns the stream.
+     *
+     * @return StreamInterface
+     */
+    public function stream(): StreamInterface
+    {
+        return $this->stream;
+    }
+    
+    /**
+     * Returns the delimiter.
+     *
+     * @return string
+     */
+    public function delimiter(): string
+    {
+        return $this->delimiter;
+    }
+    
+    /**
+     * Returns the enclosure.
+     *
+     * @return string
+     */
+    public function enclosure(): string
+    {
+        return $this->enclosure;
+    }
+    
+    /**
+     * Returns the escape.
+     *
+     * @return string
+     */
+    public function escape(): string
+    {
+        return $this->escape;
+    }
+    
+    /**
+     * Returns the preview rows.
+     *
+     * @return int
+     */
+    public function previewRows(): int
+    {
+        return $this->previewRows;
+    }
+    
+    /**
      * Returns the column names (schema definition).
      *
      * Example: ['title', 'status', 'created_at']

@@ -50,6 +50,26 @@ class NdJsonStream implements ReaderInterface
     ) {}
     
     /**
+     * Returns the stream.
+     *
+     * @return StreamInterface
+     */
+    public function stream(): StreamInterface
+    {
+        return $this->stream;
+    }
+    
+    /**
+     * Returns the preview rows.
+     *
+     * @return int
+     */
+    public function previewRows(): int
+    {
+        return $this->previewRows;
+    }
+    
+    /**
      * Returns the column names (schema definition).
      *
      * Example: ['title', 'status', 'created_at']
