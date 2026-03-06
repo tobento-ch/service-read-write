@@ -29,6 +29,8 @@ It abstracts common operations such as reading rows from streams or iterables, i
         - [Iterable Reader](#iterable-reader)
         - [JSON Stream Reader](#json-stream-reader)
         - [NDJSON Stream Reader](#ndjson-stream-reader)
+        - [Repository Reader](#repository-reader)
+        - [Storage Reader](#storage-reader)
     - [Writers Comparison](#writers-comparison)
     - [Writers](#writers)
         - [CSV Resource Writer](#csv-resource-writer)
@@ -124,12 +126,14 @@ print_r($result->timeline());
 
 ## Readers Comparison
 
-| Reader                 | Streaming | Supports Preview | Detects Columns | Nested Structures | Skips Invalid Rows | Typical Use Case |
-|------------------------|-----------|------------------|------------------|-------------------|---------------------|------------------|
-| **CSV Stream Reader**  | Yes       | Yes              | Yes              | No                | Yes                 | Importing tabular CSV files of any size |
-| **Iterable Reader**    | Yes       | Yes              | Yes (from first row) | Yes (if iterable contains arrays) | Yes | Reading from arrays, generators, API responses |
-| **JSON Stream Reader** | Yes       | Yes              | Yes              | Yes               | Yes (`SkipRow`)     | Large JSON arrays, API exports, structured data |
-| **NDJSON Stream Reader** | Yes     | Yes              | Yes              | Yes (per line)    | Yes (`SkipRow`)     | Log streams, event streams, line-based JSON |
+| Reader                   | Streaming | Supports Preview | Detects Columns | Nested Structures | Skips Invalid Rows | Typical Use Case |
+|--------------------------|-----------|------------------|------------------|-------------------|---------------------|------------------|
+| **CSV Stream Reader**    | Yes       | Yes              | Yes              | No                | Yes                 | Importing tabular CSV files of any size |
+| **Iterable Reader**      | Yes       | Yes              | Yes (from first row) | Yes (if iterable contains arrays) | Yes | Reading from arrays, generators, API responses |
+| **JSON Stream Reader**   | Yes       | Yes              | Yes              | Yes               | Yes (`SkipRow`)     | Large JSON arrays, API exports, structured data |
+| **NDJSON Stream Reader** | Yes       | Yes              | Yes              | Yes (per line)    | Yes (`SkipRow`)     | Log streams, event streams, line-based JSON |
+| **Repository Reader**    | No        | Yes              | Yes (from first entity) | Yes (entity to array) | Yes (`SkipRow`) | Domain repositories, entity-based data sources |
+| **Storage Reader**       | No        | Yes              | Yes              | Yes (item to array) | Yes (`SkipRow`)     | Storage backends (in-memory, database, abstracted storage) |
 
 **Notes**
 
@@ -328,6 +332,124 @@ if ($reader->isFinished()) {
 - `JsonStream` uses [JsonMachine](https://github.com/halaxa/json-machine) to stream a top-level JSON array without loading the full file, while `NdJsonStream` reads line-by-line NDJSON. Both are streaming-friendly; choose based on source format (array vs. line-delimited) and whether the data is continuous.
 - Prefer NDJSON for log-style or continuously appended data; prefer `JsonStream` for structured arrays.
 - Any PSR-7 implementation (Nyholm, Laminas, Guzzle, Slim, etc.) can be used to create the stream.
+
+### Repository Reader
+
+The `RepositoryReader` reads entities from any repository that implements the `RepositoryInterface`.  
+It applies optional `where` and `orderBy` constraints, converts each entity into a `RowInterface`, and supports sequential reading with offset and limit.
+
+**Features**
+
+- Works with any repository implementation that follows `RepositoryInterface`.
+- Supports `where` and `orderBy` constraints passed directly into the constructor.
+- Converts entities using arrays, `toArray()`, or a custom `objectToArray` callable.
+- Produces `SkipRow` objects when an entity cannot be converted into a valid row.
+- Provides `isFinished()` to check if all rows have been consumed.
+- Tracks the current offset for sequential reading.
+- `totalRows()` returns the number of entities after applying the constraints.
+- `previewRows()` controls how many rows are sampled for `columnsPreview()`.
+
+**Example**
+
+```php
+use Tobento\Service\ReadWrite\Reader\RepositoryReader;
+use Tobento\Service\Repository\RepositoryInterface;
+
+// Create reader with a query
+$reader = new RepositoryReader(
+    // RepositoryInterface instance used as the data source
+    repository: $repository,
+    
+    // Filtering conditions applied before reading
+    where: [],
+    
+    // Sorting rules
+    orderBy: [],
+    
+    // Optional callable to convert objects into arrays
+    objectToArray: function (object $entity): array {
+        // Custom conversion logic for domain objects
+        return [
+            'id'   => $entity->id(),
+            'name' => $entity->name(),
+            'role' => $entity->role(),
+        ];
+    },
+    
+    // Number of rows sampled for columnsPreview()
+    previewRows: 3,
+);
+
+// Read the first 2 rows
+foreach ($reader->read(offset: 0, limit: 2) as $row) {
+    if ($row instanceof \Tobento\Service\ReadWrite\Row\SkipRow) {
+        echo 'Skipped row: ' . $row->reason() . PHP_EOL;
+    } else {
+        print_r($row->all());
+    }
+}
+
+echo 'Current offset: ' . $reader->currentOffset() . PHP_EOL;
+
+if ($reader->isFinished()) {
+    echo 'Reached end of active users';
+}
+```
+
+### Storage Reader
+
+The `StorageReader` reads rows from any storage backend that implements the `StorageInterface`.  
+It applies an optional query callable, converts each storage item into a `RowInterface`, and supports sequential reading with offset and limit.
+
+**Features**
+
+- Works with any storage implementation that follows `StorageInterface`.
+- Supports a query callable for filtering, sorting, or limiting.
+- Converts items using arrays, `ItemInterface`, or `toArray()`.
+- Produces `SkipRow` objects when an item cannot be converted into a valid row.
+- Provides `isFinished()` to check if all rows have been consumed.
+- Tracks the current offset for sequential reading.
+- `totalRows()` returns the number of rows after applying the query.
+- `previewRows()` controls how many rows are sampled for `columnsPreview()`.
+
+**Example**
+
+```php
+use Tobento\Service\ReadWrite\Reader\StorageReader;
+use Tobento\Service\Storage\StorageInterface;
+
+// Create reader with a query
+$reader = new StorageReader(
+    // StorageInterface instance used as the data source
+    storage: $storage,
+    
+    // Table name to read from
+    table: 'products',
+    
+    // Optional query callable applied before reading
+    query: function (StorageInterface $t): void {
+        $t->where('price', '>', 10)->order('price', 'asc');
+    },
+    
+    // Number of rows sampled for columnsPreview()
+    previewRows: 3,
+);
+
+// Read the first 2 rows
+foreach ($reader->read(offset: 0, limit: 2) as $row) {
+    if ($row instanceof \Tobento\Service\ReadWrite\Row\SkipRow) {
+        echo 'Skipped row: ' . $row->reason() . PHP_EOL;
+    } else {
+        print_r($row->all());
+    }
+}
+
+echo 'Current offset: ' . $reader->currentOffset() . PHP_EOL;
+
+if ($reader->isFinished()) {
+    echo 'Reached end of filtered products';
+}
+```
 
 ## Writers Comparison
 
