@@ -335,12 +335,20 @@ if ($reader->isFinished()) {
 
 ### Repository Reader
 
-The `RepositoryReader` reads entities from any repository that implements the `RepositoryInterface`.  
+The `RepositoryReader` reads entities from any repository that implements the `ReadRepositoryInterface`.  
 It applies optional `where` and `orderBy` constraints, converts each entity into a `RowInterface`, and supports sequential reading with offset and limit.
+
+**Requirements**
+
+Install the [tobento/service-repository](https://github.com/tobento-ch/service-repository) package, which provides the `ReadRepositoryInterface` used by this reader:
+
+```
+composer require tobento/service-repository
+```
 
 **Features**
 
-- Works with any repository implementation that follows `RepositoryInterface`.
+- Works with any repository implementation that follows `ReadRepositoryInterface`.
 - Supports `where` and `orderBy` constraints passed directly into the constructor.
 - Converts entities using arrays, `toArray()`, or a custom `objectToArray` callable.
 - Produces `SkipRow` objects when an entity cannot be converted into a valid row.
@@ -353,11 +361,11 @@ It applies optional `where` and `orderBy` constraints, converts each entity into
 
 ```php
 use Tobento\Service\ReadWrite\Reader\RepositoryReader;
-use Tobento\Service\Repository\RepositoryInterface;
+use Tobento\Service\Repository\ReadRepositoryInterface;
 
 // Create reader with a query
 $reader = new RepositoryReader(
-    // RepositoryInterface instance used as the data source
+    // ReadRepositoryInterface instance used as the data source
     repository: $repository,
     
     // Filtering conditions applied before reading
@@ -400,6 +408,14 @@ if ($reader->isFinished()) {
 
 The `StorageReader` reads rows from any storage backend that implements the `StorageInterface`.  
 It applies an optional query callable, converts each storage item into a `RowInterface`, and supports sequential reading with offset and limit.
+
+**Requirements**
+
+Install the [tobento/service-storage](https://github.com/tobento-ch/service-storage) package, which provides the `StorageInterface` used by this reader:
+
+```
+composer require tobento/service-storage
+```
 
 **Features**
 
