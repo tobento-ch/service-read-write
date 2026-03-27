@@ -149,11 +149,20 @@ class RepositoryReader implements ReaderInterface
             if (!is_object($item)) {
                 continue;
             }
-            
+
             $item = $this->convertObjectToArray($item);
-            
+
             foreach ($headers as $col) {
                 $val = $item[$col] ?? '';
+
+                // Normalize JSON values to strings
+                if (is_array($val) || is_object($val)) {
+                    $val = json_encode($val);
+                } elseif (is_scalar($val)) {
+                    $val = (string)$val;
+                } else {
+                    $val = '';
+                }
 
                 if ($val !== '' && !in_array($val, $colValues[$col], true)) {
                     $colValues[$col][] = $val;

@@ -132,23 +132,34 @@ class StorageReader implements ReaderInterface
         $colValues = array_fill_keys($headers, []);
         
         $items = $this->applyQuery($this->storage())->limit(number: $this->previewRows(), offset: 0)->get();
-
+        
         foreach ($items as $item) {
-            
-            $item = $this->convertItemToArray($item);
-            
-            if (is_null($item)) {
-                continue;
+
+            if (is_object($item)) {
+                $item = $this->convertItemToArray($item);
             }
             
+            if (!is_array($item)) {
+                continue;
+            }
+
             foreach ($headers as $col) {
                 $val = $item[$col] ?? '';
+
+                // Normalize JSON values to strings
+                if (is_array($val) || is_object($val)) {
+                    $val = json_encode($val);
+                } elseif (is_scalar($val)) {
+                    $val = (string)$val;
+                } else {
+                    $val = '';
+                }
 
                 if ($val !== '' && !in_array($val, $colValues[$col], true)) {
                     $colValues[$col][] = $val;
                 }
             }
-        }
+        }        
 
         return array_map(
             fn(array $vals) => implode(' | ', $vals),
