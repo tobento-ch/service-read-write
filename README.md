@@ -34,6 +34,7 @@ It abstracts common operations such as reading rows from streams or iterables, i
     - [Writers Comparison](#writers-comparison)
     - [Writers](#writers)
         - [CSV Resource Writer](#csv-resource-writer)
+        - [HTML Resource Writer](#html-resource-writer)
         - [JSON Resource Writer](#json-resource-writer)
         - [NDJSON Resource Writer](#ndjson-resource-writer)
         - [Null Writer](#null-writer)
@@ -472,6 +473,7 @@ if ($reader->isFinished()) {
 | Writer                   | Streaming | Supports Headers | Supports Attributes | Nested Structures | Append Mode        | Typical Use Case |
 |--------------------------|-----------|------------------|---------------------|-------------------|---------------------|------------------|
 | **CSV Resource Writer**  | Yes       | Yes              | No                  | No                | Yes                 | Exporting tabular data, spreadsheets, reports |
+| **HTML Resource Writer**  | No        | Template-based   | Yes (via template)  | Yes               | No (Finalize only)  | HTML reports, tables, invoices, formatted exports |
 | **JSON Resource Writer** | Yes       | N/A              | N/A                 | Yes               | Yes                 | APIs, structured exports, debugging |
 | **NDJSON Resource Writer** | Yes     | N/A              | N/A                 | Yes (per line)    | Yes                 | Log streams, large datasets, incremental processing |
 | **XML Resource Writer**  | Yes       | N/A              | Yes (`@attr`)       | Yes               | No (Finalize only)  | Feeds (RSS, Atom), Google Shopping, catalogs, sitemaps |
@@ -544,6 +546,114 @@ $writer->finish();
 - The header row is written automatically based on the first row's attributes.
 - If the resource is already open, start() will throw a WriterException.
 - Use `Mode::Overwrite` to start fresh (writes BOM) or `Mode::Append` to add to an existing file.
+
+### HTML Resource Writer
+
+The `HtmlResource` writer exports rows into an HTML document using a template-based rendering system powered by [tobento/service-view](https://github.com/tobento-ch/service-view).
+It collects all written rows, merges them with optional template data, and renders an HTML view using any supported template engine (PHP, Twig, Plates, etc.).
+
+**Requirements**
+
+Install the [tobento/service-view](https://github.com/tobento-ch/service-view) package, which provides the view rendering interfaces and utilities used by this writer:
+
+```
+composer require tobento/service-view
+```
+
+**Features**
+
+- Implements `WriterInterface`.
+- Collects rows and passes them to a HTML template as `$rows`.
+- Supports additional template data via the `$templateData` array (e.g. `title`, `description`, metadata).
+- Provides `start()`, `write()`, and `finish()` lifecycle methods.
+- Throws `WriterException` or `WriteException` on errors.
+- Uses any `ResourceInterface` (local file, stream, memory, etc.).
+- Works with any `ViewInterface` implementation.
+- See [Writer Resources](#writer-resources) for details on available resource implementations.
+
+**Example**
+
+```php
+use Tobento\Service\ReadWrite\Row\Row;
+use Tobento\Service\ReadWrite\Writer\PdfResource;
+use Tobento\Service\ReadWrite\Writer\Resource\LocalFile;
+use Tobento\Service\View\ViewInterface;
+
+// Create a file resource
+$resource = new LocalFile('/data/report.html');
+
+// Initialize the HTML writer with a template and template data
+$writer = new HtmlResource(
+    resource: $resource,
+    view: $view, // ViewInterface see view service.
+    templateName: 'html/export-table',
+    templateData: [
+        'title' => 'Product Report',
+        'generated_at' => date('Y-m-d'),
+    ],
+);
+
+// Start writing
+$writer->start();
+
+// Write rows (these will be available as $rows in the template)
+$writer->write(new Row(key: 1, attributes: ['name' => 'Apple', 'price' => 2.50]));
+$writer->write(new Row(key: 2, attributes: ['name' => 'Banana', 'price' => 1.20]));
+
+// Finish writing and generate the HTML
+$writer->finish();
+```
+
+**Template Example**
+
+A HTML template is a regular view file that receives the merged `$templateData` and the collected `$rows`.  
+You may include CSS assets, partials, and any layout structure you need.
+
+```php
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title><?= $view->esc($title ?? 'Export') ?></title>
+
+        <?= $view->assets()->render() ?>
+
+        <?php
+        // Assets can be included in every subview too.
+        $view->asset('assets/css/basis.css');
+        $view->asset('assets/css/app.css');
+        ?>
+    </head>
+    <body class="content">
+        <?= $view->render('inc/header') ?>
+
+        <?php if (!empty($rows)) { ?>
+            <table>
+                <thead>
+                    <tr>
+                        <?php foreach (array_keys($rows[0]->all()) as $col) { ?>
+                            <th><?= $view->esc($col) ?></th>
+                        <?php } ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($rows as $row) { ?>
+                        <tr>
+                            <?php foreach ($row->all() as $value) { ?>
+                                <td><?= $view->esc((string)$value) ?></td>
+                            <?php } ?>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        <?php } else { ?>
+            <p>No data available.</p>
+        <?php } ?>
+
+        <?= $view->render('inc/footer') ?>
+    </body>
+</html>
+```
 
 ### JSON Resource Writer
 
