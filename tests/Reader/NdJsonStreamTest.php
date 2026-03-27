@@ -77,6 +77,30 @@ TXT;
         );
     }
 
+    public function testColumnsPreviewAggregatesJsonValues(): void
+    {
+        $ndjson = <<<TXT
+    {"id":1,"name":{"first":"Alice","role":"admin"}}
+    {"id":2,"name":{"first":"Bob","role":"user"}}
+    {"id":3,"name":{"first":"Alice","role":"admin"}}
+    TXT;
+
+        $stream = $this->createStream($ndjson);
+        $reader = new NdJsonStream($stream, previewRows: 3);
+
+        $preview = $reader->columnsPreview();
+
+        // Scalars still aggregate correctly
+        $this->assertSame('1 | 2 | 3', $preview['id']);
+
+        // JSON objects become JSON strings and duplicates are removed
+        $this->assertSame(
+            json_encode(['first' => 'Alice', 'role' => 'admin']) . ' | ' .
+            json_encode(['first' => 'Bob',   'role' => 'user']),
+            $preview['name']
+        );
+    }
+
     public function testColumnsPreviewSkipsInvalidRows(): void
     {
         $ndjson = <<<TXT

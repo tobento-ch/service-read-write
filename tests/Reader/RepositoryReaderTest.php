@@ -141,6 +141,36 @@ class RepositoryReaderTest extends TestCase
             $reader->columnsPreview()
         );
     }
+    
+    public function testColumnsPreviewAggregatesJsonValues(): void
+    {
+        $repo = new FakeReadRepository([
+            [
+                'id'   => 1,
+                'name' => ['first' => 'Alice', 'role' => 'admin'],
+            ],
+            [
+                'id'   => 2,
+                'name' => ['first' => 'Bob', 'role' => 'user'],
+            ],
+            [
+                'id'   => 3,
+                'name' => ['first' => 'Alice', 'role' => 'admin'], // duplicate JSON
+            ],
+        ]);
+
+        $reader = new RepositoryReader(repository: $repo, previewRows: 3);
+
+        $preview = $reader->columnsPreview();
+
+        $this->assertSame('1 | 2 | 3', $preview['id']);
+
+        $this->assertSame(
+            json_encode(['first' => 'Alice', 'role' => 'admin']) . ' | ' .
+            json_encode(['first' => 'Bob',   'role' => 'user']),
+            $preview['name']
+        );
+    }
 
     public function testReadsRows(): void
     {

@@ -87,6 +87,41 @@ class StorageReaderTest extends TestCase
         $this->assertSame('A | B', $preview['sku']);
         $this->assertSame('10 | 20', $preview['price']);
     }
+    
+    public function testColumnsPreviewWithJson()
+    {
+        $storage = $this->createStorage([
+            [
+                'id' => 1,
+                'sku' => ['code' => 'A', 'color' => 'red'],
+                'price' => 10,
+            ],
+            [
+                'id' => 2,
+                'sku' => ['code' => 'B', 'color' => 'blue'],
+                'price' => 20,
+            ],
+        ]);
+
+        $reader = new StorageReader(
+            storage: $storage,
+            table: 'products',
+            query: null,
+            previewRows: 2
+        );
+
+        $preview = $reader->columnsPreview();
+
+        // Scalars still work
+        $this->assertSame('10 | 20', $preview['price']);
+
+        // JSON arrays become JSON strings
+        $this->assertSame(
+            json_encode(['code' => 'A', 'color' => 'red']) . ' | ' .
+            json_encode(['code' => 'B', 'color' => 'blue']),
+            $preview['sku']
+        );
+    }
 
     public function testTotalRows()
     {
