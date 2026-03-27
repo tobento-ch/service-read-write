@@ -1,6 +1,6 @@
 {
     "name": "tobento/service-read-write",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "type": "library",
     "description": "Flexible data readers, writers, modifiers and processors for PHP applications.",
     "keywords": [
@@ -15,6 +15,7 @@
         "json",
         "ndjson",
         "xml",
+        "html",
         "streaming",
         "import",
         "export"
@@ -43,6 +44,7 @@
         "tobento/service-event": "May be used to support events",
         "tobento/service-file-storage": "To support file storage writer resource",
         "tobento/service-pdf": "Required for pdf resource writer",
+        "tobento/service-view": "Required for HTML resource writer",
         "tobento/service-repository": "To support repository writer",
         "tobento/service-storage": "To support storage writer",
         "tobento/service-encryption": "Required for the Encrypt modifier",
