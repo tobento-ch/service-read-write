@@ -91,6 +91,28 @@ class CsvResourceTest extends TestCase
 
         $this->assertSame($expected, $resource->getContent());
     }
+    
+    public function testWriteEncodesArrayValuesAsJson(): void
+    {
+        $resource = new InMemory();
+        $writer = new CsvResource($resource);
+
+        $writer->start();
+
+        $row = new Row(1, [
+            'name' => 'Alice',
+            'tags' => ['php', 'xml'],
+        ]);
+
+        $writer->write($row);
+
+        $expected =
+            "\xEF\xBB\xBF" .
+            "name,tags\n" .
+            "Alice,\"[\"\"php\"\",\"\"xml\"\"]\"\n";
+
+        $this->assertSame($expected, $resource->getContent());
+    }
 
     public function testWriteThrowsIfResourceNotOpen(): void
     {
