@@ -210,6 +210,11 @@ final class CsvResource implements WriterInterface, ModeAwareInterface
      */
     private function toCsv(array $fields): string
     {
+        $fields = array_map(
+            fn($v) => is_array($v) ? json_encode($v, JSON_UNESCAPED_UNICODE) : $v,
+            $fields
+        );
+        
         $stream = fopen('php://temp', 'r+');
         fputcsv($stream, $fields, $this->delimiter, $this->enclosure, $this->escape);
         rewind($stream);
