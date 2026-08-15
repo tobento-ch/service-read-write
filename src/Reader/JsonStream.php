@@ -221,7 +221,7 @@ class JsonStream implements ReaderInterface
                 break;
             }
             
-            $this->currentOffset = $key;
+            $this->currentOffset = is_numeric($key) ? (int)$key : $this->currentOffset + 1;
             
             if (is_array($item)) {
                 yield new Row(key: $key, attributes: $item);
