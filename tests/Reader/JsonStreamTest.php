@@ -243,6 +243,34 @@ JSON;
 
         $this->assertTrue($reader->isFinished());
     }
+    
+    public function testCurrentOffsetWithNonNumericKeys(): void
+    {
+        // JSON object → JsonMachine yields STRING KEYS
+        $json = <<<JSON
+{
+    "first": {"id": 1},
+    "second": {"id": 2},
+    "third": {"id": 3}
+}
+JSON;
+
+        $stream = $this->createStream($json);
+        $reader = new JsonStream($stream);
+
+        $rows = iterator_to_array($reader->read());
+
+        // We expect 3 rows
+        $this->assertCount(3, $rows);
+
+        // Keys are strings: "first", "second", "third"
+        $this->assertSame('first', $rows[0]->key());
+        $this->assertSame('second', $rows[1]->key());
+        $this->assertSame('third', $rows[2]->key());
+
+        // currentOffset increments for non-numeric keys:
+        $this->assertSame(3, $reader->currentOffset());
+    }
 
     public function testTotalRows(): void
     {
